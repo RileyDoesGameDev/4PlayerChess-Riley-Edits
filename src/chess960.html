@@ -257,6 +257,92 @@
             <div class="square light inactive" data-position="n1" style="pointer-events: none;"></div>
         </div>
     </div>
+    <script>
+        // Generate a valid Chess960 starting position
+        function generateChess960Position() {
+            const pieces = new Array(8);
+
+            // Place bishops on opposite colored squares
+            const lightSquares = [1, 3, 5, 7]; // e, g, i, k (positions 1, 3, 5, 7)
+            const darkSquares = [0, 2, 4, 6];  // d, f, h, j (positions 0, 2, 4, 6)
+
+            // Randomly place first bishop on a light square
+            const lightBishopPos = lightSquares[Math.floor(Math.random() * lightSquares.length)];
+            pieces[lightBishopPos] = 'bishop';
+
+            // Randomly place second bishop on a dark square
+            const darkBishopPos = darkSquares[Math.floor(Math.random() * darkSquares.length)];
+            pieces[darkBishopPos] = 'bishop';
+
+            // Get remaining empty positions
+            const emptyPositions = [];
+            for (let i = 0; i < 8; i++) {
+                if (!pieces[i]) emptyPositions.push(i);
+            }
+
+            // Place queen randomly in one of the remaining positions
+            const queenIndex = Math.floor(Math.random() * emptyPositions.length);
+            pieces[emptyPositions[queenIndex]] = 'queen';
+            emptyPositions.splice(queenIndex, 1);
+
+            // Place knights randomly in two of the remaining positions
+            const knight1Index = Math.floor(Math.random() * emptyPositions.length);
+            pieces[emptyPositions[knight1Index]] = 'knight';
+            emptyPositions.splice(knight1Index, 1);
+
+            const knight2Index = Math.floor(Math.random() * emptyPositions.length);
+            pieces[emptyPositions[knight2Index]] = 'knight';
+            emptyPositions.splice(knight2Index, 1);
+
+            // Place rooks and king in the remaining positions (rook, king, rook order)
+            // This ensures the king is between the two rooks
+            emptyPositions.sort((a, b) => a - b);
+            pieces[emptyPositions[0]] = 'rook';
+            pieces[emptyPositions[1]] = 'king';
+            pieces[emptyPositions[2]] = 'rook';
+
+            return pieces;
+        }
+
+        // Apply the Chess960 position to all four players
+        function applyChess960Position() {
+            const position = generateChess960Position();
+            const colors = ['blue', 'yellow', 'red', 'green'];
+
+            // Position mappings for each color
+            const positionMappings = {
+                blue: ['d14', 'e14', 'f14', 'g14', 'h14', 'i14', 'j14', 'k14'],
+                yellow: ['a11', 'a10', 'a9', 'a8', 'a7', 'a6', 'a5', 'a4'],
+                red: ['n11', 'n10', 'n9', 'n8', 'n7', 'n6', 'n5', 'n4'],
+                green: ['d1', 'e1', 'f1', 'g1', 'h1', 'i1', 'j1', 'k1']
+            };
+
+            colors.forEach(color => {
+                const positions = positionMappings[color];
+
+                position.forEach((piece, index) => {
+                    const square = document.querySelector(`[data-position="${positions[index]}"]`);
+                    if (square) {
+                        // Remove any existing piece
+                        const existingPiece = square.querySelector('img');
+                        if (existingPiece) {
+                            existingPiece.remove();
+                        }
+
+                        // Add the new piece
+                        const img = document.createElement('img');
+                        img.className = `piece ${color} ${piece}`;
+                        img.src = `img/${color}/${piece}.svg`;
+                        img.draggable = true;
+                        square.appendChild(img);
+                    }
+                });
+            });
+        }
+
+        // Run on page load
+        window.addEventListener('DOMContentLoaded', applyChess960Position);
+    </script>
     <script src="chess.js"></script>
 </body>
 </html>
