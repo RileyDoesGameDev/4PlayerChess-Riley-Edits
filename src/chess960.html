@@ -259,12 +259,15 @@
     </div>
     <script>
         // Generate a valid Chess960 starting position
+        // This function generates positions based on the square color pattern where:
+        // position 0 = dark square, position 1 = light square, etc.
         function generateChess960Position() {
             const pieces = new Array(8);
 
             // Place bishops on opposite colored squares
-            const lightSquares = [1, 3, 5, 7]; // e, g, i, k (positions 1, 3, 5, 7)
-            const darkSquares = [0, 2, 4, 6];  // d, f, h, j (positions 0, 2, 4, 6)
+            // For Blue/Yellow: positions 0,2,4,6 are dark; 1,3,5,7 are light
+            const lightSquares = [1, 3, 5, 7]; // light square positions
+            const darkSquares = [0, 2, 4, 6];  // dark square positions
 
             // Randomly place first bishop on a light square
             const lightBishopPos = lightSquares[Math.floor(Math.random() * lightSquares.length)];
@@ -295,7 +298,7 @@
             emptyPositions.splice(knight2Index, 1);
 
             // Place rooks and king in the remaining positions (rook, king, rook order)
-            // This ensures the king is between the two rooks
+            // This ensures the king is between the two rooks (Chess960 rule)
             emptyPositions.sort((a, b) => a - b);
             pieces[emptyPositions[0]] = 'rook';
             pieces[emptyPositions[1]] = 'king';
@@ -317,10 +320,20 @@
                 green: ['d1', 'e1', 'f1', 'g1', 'h1', 'i1', 'j1', 'k1']
             };
 
+            // Square color patterns differ between players due to board geometry
+            // Blue/Yellow: position 0 = dark, 1 = light, 2 = dark, etc.
+            // Red/Green: position 0 = light, 1 = dark, 2 = light, etc.
+            // We need to invert the position array for Red and Green to maintain Chess960 rules
+            const needsInversion = ['red', 'green'];
+
             colors.forEach(color => {
                 const positions = positionMappings[color];
 
-                position.forEach((piece, index) => {
+                // For Red and Green, we need to reverse the piece order to account for
+                // their inverted square color pattern, ensuring bishops stay on opposite colors
+                const pieceOrder = needsInversion.includes(color) ? [...position].reverse() : position;
+
+                pieceOrder.forEach((piece, index) => {
                     const square = document.querySelector(`[data-position="${positions[index]}"]`);
                     if (square) {
                         // Remove any existing piece
