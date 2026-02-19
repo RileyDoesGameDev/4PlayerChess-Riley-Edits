@@ -1,5 +1,9 @@
 # 4PlayerChess - Riley Edits
 
+https://github.com/user-attachments/assets/d8e8e8e8-8e8e-8e8e-8e8e-8e8e8e8e8e8e
+
+[Demo Video](src/2026-02-18%2020-01-06.mkv)
+
 This is a modified version of the original [4PlayerChess](https://github.com/KylerCondran/4PlayerChess.git) project with Chess960 (Fischer Random Chess) support and comprehensive unit testing.
 
 ## Description of Changes
